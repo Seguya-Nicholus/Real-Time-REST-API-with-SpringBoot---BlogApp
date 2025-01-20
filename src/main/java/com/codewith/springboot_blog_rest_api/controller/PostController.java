@@ -1,7 +1,11 @@
 package com.codewith.springboot_blog_rest_api.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +31,18 @@ public class PostController {
 
         return new ResponseEntity<PostDto>(postService.createPost(postDto), HttpStatus.CREATED);
 
+    }
+
+    // Get all posts
+    @GetMapping
+    public List<PostDto> getAllPosts(){
+        return postService.getAllPosts();
+    }
+
+    // Get Post by Id
+    @GetMapping("/{id}")
+    public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") long id){
+        return new ResponseEntity<PostDto>(postService.getPostById(id), HttpStatus.OK);
     }
 
 
