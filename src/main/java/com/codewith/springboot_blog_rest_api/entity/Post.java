@@ -1,9 +1,11 @@
 package com.codewith.springboot_blog_rest_api.entity;
 
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 @Data // Getters, Setters, Tostring,
 @AllArgsConstructor  // All argument constructor
