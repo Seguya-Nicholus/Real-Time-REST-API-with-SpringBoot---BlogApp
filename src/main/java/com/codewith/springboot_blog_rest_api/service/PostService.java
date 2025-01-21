@@ -3,11 +3,12 @@ package com.codewith.springboot_blog_rest_api.service;
 import java.util.List;
 
 import com.codewith.springboot_blog_rest_api.payload.PostDto;
+import com.codewith.springboot_blog_rest_api.payload.PostResponse;
 
 public interface PostService {
     PostDto createPost(PostDto postDto);
 
-    List<PostDto> getAllPosts();
+    PostResponse getAllPosts(int pageNo, int pageSize);
 
     PostDto getPostById(long id);
 
