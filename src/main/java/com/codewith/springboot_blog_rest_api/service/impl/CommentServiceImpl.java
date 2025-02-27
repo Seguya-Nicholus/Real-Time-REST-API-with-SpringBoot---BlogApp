@@ -1,5 +1,8 @@
 package com.codewith.springboot_blog_rest_api.service.impl;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.hibernate.binder.internal.CommentsBinder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +44,16 @@ public class CommentServiceImpl implements CommentService {
         return mapToDTO(newComment);
     }
 
+
+    @Override
+    public List<CommentDto> getCommentsByPostId(long postId) {
+        // retrieve comments by postId
+        List<Comment> comments = commentRepository.findByPostId(postId);
+
+        // convert list of comment entities to list of comment dto's
+        return comments.stream().map(comment -> mapToDTO(comment)).collect(Collectors.toList());
+    }
+
     private CommentDto mapToDTO(Comment comment){
 
         CommentDto commentDto = new CommentDto();
@@ -64,5 +77,8 @@ public class CommentServiceImpl implements CommentService {
 
         return comment;
     }
+
+
+    
 
 }
