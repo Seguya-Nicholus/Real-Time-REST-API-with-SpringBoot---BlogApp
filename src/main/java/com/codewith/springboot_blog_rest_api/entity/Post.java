@@ -6,11 +6,13 @@ import java.util.Set;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
-@Data // Getters, Setters, Tostring,
+@Getter // Getters, 
+@Setter //Setters
 @AllArgsConstructor  // All argument constructor
 @NoArgsConstructor   // No argument constructor
 
