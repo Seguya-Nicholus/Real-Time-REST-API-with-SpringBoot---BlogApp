@@ -53,29 +53,6 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream().map(comment -> mapToDTO(comment)).collect(Collectors.toList());
     }
 
-    private CommentDto mapToDTO(Comment comment) {
-
-        CommentDto commentDto = new CommentDto();
-
-        commentDto.setId(comment.getId());
-        commentDto.setName(comment.getName());
-        commentDto.setEmail(comment.getEmail());
-        commentDto.setBody(comment.getBody());
-
-        return commentDto;
-    }
-
-    private Comment mapToEntity(CommentDto commentDto) {
-        Comment comment = new Comment();
-
-        comment.setId(commentDto.getId());
-        comment.setName(commentDto.getName());
-        comment.setEmail(commentDto.getEmail());
-        comment.setBody(commentDto.getBody());
-
-        return comment;
-    }
-
     @Override
     public CommentDto getCommentById(Long postId, Long commentId) {
         // retrieve post entity by id
@@ -130,6 +107,29 @@ public class CommentServiceImpl implements CommentService {
         }
 
         commentRepository.delete(comment);
+    }
+
+    private CommentDto mapToDTO(Comment comment) {
+
+        CommentDto commentDto = new CommentDto();
+
+        commentDto.setId(comment.getId());
+        commentDto.setName(comment.getName());
+        commentDto.setEmail(comment.getEmail());
+        commentDto.setBody(comment.getBody());
+
+        return commentDto;
+    }
+
+    private Comment mapToEntity(CommentDto commentDto) {
+        Comment comment = new Comment();
+
+        comment.setId(commentDto.getId());
+        comment.setName(commentDto.getName());
+        comment.setEmail(commentDto.getEmail());
+        comment.setBody(commentDto.getBody());
+
+        return comment;
     }
 
 }
