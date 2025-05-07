@@ -1,14 +1,15 @@
 package com.codewith.springboot_blog_rest_api.security;
 
-import com.springboot.blog.entity.Role;
-import com.springboot.blog.entity.User;
-import com.springboot.blog.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.codewith.springboot_blog_rest_api.entity.Role;
+import com.codewith.springboot_blog_rest_api.repository.UserRepository;
+import com.codewith.springboot_blog_rest_api.entity.User;
 
 import java.util.Collection;
 import java.util.Set;

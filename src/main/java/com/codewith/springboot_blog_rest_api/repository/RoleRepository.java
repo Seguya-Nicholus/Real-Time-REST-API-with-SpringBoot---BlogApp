@@ -1,6 +1,7 @@
 package com.codewith.springboot_blog_rest_api.repository;
 
-import com.springboot.blog.entity.Role;
+import com.codewith.springboot_blog_rest_api.entity.Role;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

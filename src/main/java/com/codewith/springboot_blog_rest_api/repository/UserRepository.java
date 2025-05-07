@@ -1,8 +1,7 @@
 package com.codewith.springboot_blog_rest_api.repository;
 
-
-import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.codewith.springboot_blog_rest_api.entity.User;
 
 import java.util.Optional;
 
