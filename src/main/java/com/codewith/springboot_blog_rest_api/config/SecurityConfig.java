@@ -1,9 +1,9 @@
-package com.springboot.blog.config;
+package com.codewith.springboot_blog_rest_api.config;
 
-import com.springboot.blog.security.JwtAuthenticationEntryPoint;
-import com.springboot.blog.security.JwtAuthenticationFilter;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
+// import com.springboot.blog.security.JwtAuthenticationEntryPoint;
+// import com.springboot.blog.security.JwtAuthenticationFilter;
+// import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+// import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -22,6 +22,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.codewith.springboot_blog_rest_api.security.JwtAuthenticationEntryPoint;
+import com.codewith.springboot_blog_rest_api.security.JwtAuthenticationFilter;
+
 @Configuration
 @EnableMethodSecurity
 // @SecurityScheme(
@@ -34,17 +37,17 @@ public class SecurityConfig {
 
     private UserDetailsService userDetailsService;
 
-    // private JwtAuthenticationEntryPoint authenticationEntryPoint;
+    private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    // private JwtAuthenticationFilter authenticationFilter;
+    private JwtAuthenticationFilter authenticationFilter;
 
-    // public SecurityConfig(UserDetailsService userDetailsService,
-    //                       JwtAuthenticationEntryPoint authenticationEntryPoint,
-    //                       JwtAuthenticationFilter authenticationFilter){
-    //     this.userDetailsService = userDetailsService;
-    //     this.authenticationEntryPoint = authenticationEntryPoint;
-    //     this.authenticationFilter = authenticationFilter;
-    // }
+    public SecurityConfig(UserDetailsService userDetailsService,
+                          JwtAuthenticationEntryPoint authenticationEntryPoint,
+                          JwtAuthenticationFilter authenticationFilter){
+        this.userDetailsService = userDetailsService;
+        this.authenticationEntryPoint = authenticationEntryPoint;
+        this.authenticationFilter = authenticationFilter;
+    }
 
     @Bean
     public static PasswordEncoder passwordEncoder(){
@@ -55,6 +58,31 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
+
+    // @Bean
+    // protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    //     http
+    //             .csrf().disable()
+    //             .exceptionHandling()
+    //             .authenticationEntryPoint(authenticationEntryPoint)
+    //             .and()
+    //             .sessionManagement()
+    //             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+    //             .and()
+    //             .authorizeRequests((authorize) -> authorize
+    //                     .antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+    //                     .antMatchers("/api/v1/auth/**").permitAll()
+    //                     .antMatchers("/v2/api-docs/**").permitAll()
+    //                     .antMatchers("/swagger-ui/**").permitAll()
+    //                     .antMatchers("/swagger-resources/**").permitAll()
+    //                     .antMatchers("/swagger-ui.html").permitAll()
+    //                     .antMatchers("/webjars/**").permitAll()
+    //                     .anyRequest()
+    //                     .authenticated()
+    //             );
+    //     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+    //     return http.build();
+    // }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

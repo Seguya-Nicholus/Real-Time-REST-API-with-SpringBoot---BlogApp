@@ -2,6 +2,7 @@ package com.codewith.springboot_blog_rest_api.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ import com.codewith.springboot_blog_rest_api.utils.AppConstants;
 import jakarta.validation.Valid;
 
 @RestController // @Controller, @ResponseBody
-@RequestMapping("/api/posts") // baseUrl
+@RequestMapping("/api/v1/posts") // baseUrl
 public class PostController {
 
     private PostService postService;
@@ -29,6 +30,8 @@ public class PostController {
     public PostController(PostService postService) {
         this.postService = postService;
     }
+
+     @PreAuthorize("hasRole('ADMIN')")
 
     // Create Blog Post Api
     @PostMapping
