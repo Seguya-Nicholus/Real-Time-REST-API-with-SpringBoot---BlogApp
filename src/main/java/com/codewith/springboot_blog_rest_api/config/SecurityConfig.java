@@ -2,16 +2,21 @@ package com.codewith.springboot_blog_rest_api.config;
 
 // import com.springboot.blog.security.JwtAuthenticationEntryPoint;
 // import com.springboot.blog.security.JwtAuthenticationFilter;
-// import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-// import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import com.codewith.springboot_blog_rest_api.security.CustomUserDetailsService;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,89 +29,123 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.codewith.springboot_blog_rest_api.security.JwtAuthenticationEntryPoint;
 import com.codewith.springboot_blog_rest_api.security.JwtAuthenticationFilter;
-
 @Configuration
-@EnableMethodSecurity
-// @SecurityScheme(
-//         name = "Bear Authentication",
-//         type = SecuritySchemeType.HTTP,
-//         bearerFormat = "JWT",
-//         scheme = "bearer"
-// )
-public class SecurityConfig {
+@EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserDetailsService userDetailsService;
+    @Autowired
+    private CustomUserDetailsService userDetailsService;
 
+    @Autowired
     private JwtAuthenticationEntryPoint authenticationEntryPoint;
 
-    private JwtAuthenticationFilter authenticationFilter;
-
-    public SecurityConfig(UserDetailsService userDetailsService,
-                          JwtAuthenticationEntryPoint authenticationEntryPoint,
-                          JwtAuthenticationFilter authenticationFilter){
-        this.userDetailsService = userDetailsService;
-        this.authenticationEntryPoint = authenticationEntryPoint;
-        this.authenticationFilter = authenticationFilter;
+    @Bean
+    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+        return  new JwtAuthenticationFilter();
     }
 
     @Bean
-    public static PasswordEncoder passwordEncoder(){
+    PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-        return configuration.getAuthenticationManager();
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .csrf().disable()
+                .exceptionHandling()
+                .authenticationEntryPoint(authenticationEntryPoint)
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authorizeRequests()
+                .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+                .requestMatchers("/api/v1/auth/**").permitAll()
+                .requestMatchers("/v2/api-docs/**").permitAll()
+                .requestMatchers("/swagger-ui/**").permitAll()
+                .requestMatchers("/swagger-resources/**").permitAll()
+                .requestMatchers("/swagger-ui.html").permitAll()
+                .requestMatchers("/webjars/**").permitAll()
+                .anyRequest()
+                .authenticated();
+        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-    // @Bean
-    // protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    //     http
-    //             .csrf().disable()
-    //             .exceptionHandling()
-    //             .authenticationEntryPoint(authenticationEntryPoint)
-    //             .and()
-    //             .sessionManagement()
-    //             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-    //             .and()
-    //             .authorizeRequests((authorize) -> authorize
-    //                     .antMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
-    //                     .antMatchers("/api/v1/auth/**").permitAll()
-    //                     .antMatchers("/v2/api-docs/**").permitAll()
-    //                     .antMatchers("/swagger-ui/**").permitAll()
-    //                     .antMatchers("/swagger-resources/**").permitAll()
-    //                     .antMatchers("/swagger-ui.html").permitAll()
-    //                     .antMatchers("/webjars/**").permitAll()
-    //                     .anyRequest()
-    //                     .authenticated()
-    //             );
-    //     http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-    //     return http.build();
-    // }
-
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests((authorize) ->
-                        //authorize.anyRequest().authenticated()
-                        authorize.requestMatchers(HttpMethod.GET, "/api/**").permitAll()
-                                //.requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/swagger-ui/**").permitAll()
-                                .requestMatchers("/v3/api-docs/**").permitAll()
-                                .anyRequest().authenticated()
-
-                ).exceptionHandling( exception -> exception
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                ).sessionManagement( session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
-
-        http.addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class);
-
-        return http.build();
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+//@Configuration
+//@EnableMethodSecurity
+//@SecurityScheme(
+//        name = "Bear Authentication",
+//        type = SecuritySchemeType.HTTP,
+//        bearerFormat = "JWT",
+//        scheme = "bearer"
+//)
+//public class SecurityConfig {
+//
+//    private UserDetailsService userDetailsService;
+//
+//    private JwtAuthenticationEntryPoint authenticationEntryPoint;
+//
+//    private JwtAuthenticationFilter authenticationFilter;
+//
+//    public SecurityConfig(UserDetailsService userDetailsService,
+//                          JwtAuthenticationEntryPoint authenticationEntryPoint,
+//                          JwtAuthenticationFilter authenticationFilter){
+//        this.userDetailsService = userDetailsService;
+//        this.authenticationEntryPoint = authenticationEntryPoint;
+//        this.authenticationFilter = authenticationFilter;
+//    }
+//
+//    @Bean
+//    public static PasswordEncoder passwordEncoder(){
+//        return new BCryptPasswordEncoder();
+//    }
+//
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+//        return configuration.getAuthenticationManager();
+//    }
+//    @Bean
+//    public JwtAuthenticationFilter jwtAuthenticationFilter(){
+//        return  new JwtAuthenticationFilter();
+//    }
+//
+//    @Bean
+//    protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        http
+//                .csrf().disable()
+//                .exceptionHandling()
+//                .authenticationEntryPoint(authenticationEntryPoint)
+//                .and()
+//                .sessionManagement()
+//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .authorizeRequests((authorize) -> authorize
+//                        .requestMatchers(HttpMethod.GET, "/api/v1/**").permitAll()
+//                        .requestMatchers("/api/v1/auth/**").permitAll()
+//                        .requestMatchers("/v2/api-docs/**").permitAll()
+//                        .requestMatchers("/swagger-ui/**").permitAll()
+//                        .requestMatchers("/swagger-resources/**").permitAll()
+//                        .requestMatchers("/swagger-ui.html").permitAll()
+//                        .requestMatchers("/webjars/**").permitAll()
+//                        .anyRequest()
+//                        .authenticated()
+//                );
+//        http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
+//        return http.build();
+//    }
 
 //    @Bean
 //    public UserDetailsService userDetailsService(){

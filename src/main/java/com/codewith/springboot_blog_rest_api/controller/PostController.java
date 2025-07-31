@@ -18,8 +18,12 @@ import com.codewith.springboot_blog_rest_api.payload.PostResponse;
 import com.codewith.springboot_blog_rest_api.service.PostService;
 import com.codewith.springboot_blog_rest_api.utils.AppConstants;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import jakarta.validation.Valid;
 
+
+@Api(value = "CRUD Rest APIs for Post resources")
 @RestController // @Controller, @ResponseBody
 @RequestMapping("/api/v1/posts") // baseUrl
 public class PostController {
@@ -31,6 +35,7 @@ public class PostController {
         this.postService = postService;
     }
 
+     @ApiOperation(value = "Create Post REST API")
      @PreAuthorize("hasRole('ADMIN')")
 
     // Create Blog Post Api
@@ -41,6 +46,7 @@ public class PostController {
 
     }
 
+    @ApiOperation(value = "Get All Posts REST API")
     // Get all posts
     @GetMapping
     public PostResponse getAllPosts(
@@ -53,6 +59,8 @@ public class PostController {
         return postService.getAllPosts(pageNo, pageSize, sortBy, sortDir);
     }
 
+
+    @ApiOperation(value = "Get Post By Id REST API")
     // Get Post by Id
     @GetMapping("/{id}")
     public ResponseEntity<PostDto> getPostById(@PathVariable(name = "id") long id){
@@ -60,6 +68,8 @@ public class PostController {
     }
 
 
+    @ApiOperation(value = "Update Post By Id REST API")
+    @PreAuthorize("hasRole('ADMIN')")
     // update post by Id 
     @PutMapping("/{id}")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody PostDto postDto, @PathVariable(name = "id")long id){
@@ -70,6 +80,8 @@ public class PostController {
     }
 
 
+    @ApiOperation(value = "Delete Post By Id REST API")
+    @PreAuthorize("hasRole('ADMIN')")
     // delete post by Id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable(name = "id")long id){

@@ -1,5 +1,6 @@
 package com.codewith.springboot_blog_rest_api.security;
 
+import com.codewith.springboot_blog_rest_api.exception.BlogAPIException;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -7,15 +8,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.codewith.springboot_blog_rest_api.exception.BlogAPIException;
-
 import io.jsonwebtoken.*;
-// import io.jsonwebtoken.ExpiredJwtException;
-// import io.jsonwebtoken.Jwts;
-// import io.jsonwebtoken.MalformedJwtException;
-// import io.jsonwebtoken.SignatureAlgorithm;
-// import io.jsonwebtoken.SignatureException;
-// import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.JwtParser;
+
+import static io.jsonwebtoken.Jwts.*;
 
 @Component
 public class JwtTokenProvider {
@@ -31,7 +33,7 @@ public class JwtTokenProvider {
         Date currentDate = new Date();
         Date expireDate = new Date(currentDate.getTime() + jwtExpirationInMs);
 
-        String token = Jwts.builder()
+        String token = builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
                 .setExpiration(expireDate)
@@ -42,7 +44,7 @@ public class JwtTokenProvider {
 
      // get username from the token
     public String getUsernameFromJWT(String token){
-        Claims claims = Jwts.parser()
+        Claims claims = parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
@@ -52,7 +54,7 @@ public class JwtTokenProvider {
     // validate JWT token
     public boolean validateToken(String token){
         try{
-            Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+            parser().setSigningKey(jwtSecret).parseClaimsJws(token);
             return true;
         }catch (SignatureException ex){
             throw new BlogAPIException(HttpStatus.BAD_REQUEST, "Invalid JWT signature");
