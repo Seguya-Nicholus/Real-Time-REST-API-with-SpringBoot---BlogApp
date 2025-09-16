@@ -1,5 +1,6 @@
 package com.codewith.springboot_blog_rest_api.security;
 
+import com.codewith.springboot_blog_rest_api.entity.Role;
 import com.codewith.springboot_blog_rest_api.entity.User;
 import com.codewith.springboot_blog_rest_api.repository.UserRepository;
 import org.springframework.security.core.GrantedAuthority;
